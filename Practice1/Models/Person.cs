@@ -25,11 +25,11 @@ public abstract class Person
     // Overloaded methods
     public void Introduce()
     {
-        Console.WriteLine($"Hello, I'm {FullName}.");
+        Console.WriteLine($"Hello, I'm {FullName}.\n");
     }
 
     public void Introduce(string message)
     {
-        Console.WriteLine($"Hello, I'm {FullName}. {message}");
+        Console.WriteLine($"Hello, I'm {FullName}. {message} \n");
     }
 }

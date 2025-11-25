@@ -18,6 +18,6 @@ public class Doctor : Person
     public void TreatPatient(Patient patient)
     {
         CurrentPatient = patient;
-        Console.WriteLine($"{FullName} is treating patient {CurrentPatient.FullName}.");
+        Console.WriteLine($"{FullName} is treating patient {CurrentPatient.FullName}.\n");
     }
 }

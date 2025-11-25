@@ -1,9 +1,7 @@
 public class HospitalData
 {
-    // List of staff
     public List<Person> Staff { get; set; } = new();
 
-    // Array of patients
     public Patient[] Patients { get; set; }
 
     public HospitalData(Patient[] patients)
@@ -20,6 +18,7 @@ public class HospitalData
     {
         Console.WriteLine("\n--- Hospital Staff & Patients ---");
 
+        Console.WriteLine("\nStaff:");
         foreach (var person in Staff)
         {
             person.PrintRole();
