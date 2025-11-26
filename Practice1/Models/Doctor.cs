@@ -1,12 +1,12 @@
 public class Doctor : Person
 {
     public string Specialization { get; set; }
-    public Patient? CurrentPatient { get; set; }
+    public List<Patient> CurrentPatients { get; set; }
 
-    public Doctor(string name, int age, string id, Room room, string spec,  Patient? patient)
+    public Doctor(string name, int age, int id, Room room, string spec)
         : base(name, age, id, room)
     {
-        CurrentPatient = patient;
+        CurrentPatients = new();
         Specialization = spec;
     }
 
@@ -17,7 +17,9 @@ public class Doctor : Person
 
     public void TreatPatient(Patient patient)
     {
-        CurrentPatient = patient;
-        Console.WriteLine($"{FullName} is treating patient {CurrentPatient.FullName}.\n");
+        CurrentPatients.Add(patient);
+        Console.WriteLine($"{FullName} is treating patient {CurrentPatients.Last().FullName}.\n");
+        Console.WriteLine($"Patient {CurrentPatients.Last().FullName} is assigned to room:");
+        CurrentPatients.Last().AssignedRoom.PrintInfo();
     }
 }

@@ -5,13 +5,13 @@ public abstract class Person
     public int Age { get; set; }
 
     // Private field + public getter
-    private string _idNumber;
-    public string IdNumber => _idNumber;
+    private int _idNumber;
+    public int IdNumber => _idNumber;
 
     // Reference to another object
     public Room AssignedRoom { get; set; }
 
-    public Person(string fullName, int age, string idNumber, Room room)
+    public Person(string fullName, int age, int idNumber, Room room)
     {
         FullName = fullName;
         Age = age;

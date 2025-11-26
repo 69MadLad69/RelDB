@@ -3,7 +3,7 @@ public class Nurse : Person
     public int ExperienceYears { get; set; }
     public Doctor AssistedDoctor { get; set; }
 
-    public Nurse(string name, int age, string id, int exp, Room room, Doctor doctor)
+    public Nurse(string name, int age, int id, int exp, Room room, Doctor doctor)
         : base(name, age, id, room)
     {
         AssistedDoctor = doctor;

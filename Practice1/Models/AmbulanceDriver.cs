@@ -2,7 +2,7 @@ public class AmbulanceDriver : Person
 {
     public string LicenseNumber { get; set; }
 
-    public AmbulanceDriver(string name, int age, string id, Room room, string license)
+    public AmbulanceDriver(string name, int age, int id, Room room, string license)
         : base(name, age, id, room)
     {
         LicenseNumber = license;

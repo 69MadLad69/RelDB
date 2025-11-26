@@ -1,6 +1,6 @@
 ROUTINE Practice2.Practice2
 Practice2Practice2 ;
-  NEW choice
+ NEW choice
  FOR  DO  QUIT:choice="0"  
  . WRITE !,"--- Hospital Management System ---"
  . WRITE !,"1. Add Patient"
@@ -36,16 +36,26 @@ AddPatient
  READ room
  WRITE !,"Enter diagnosis: "
  READ diag
- WRITE !,"Enter staff treating this patient (comma-separated): " 
- READ stafflist 
- WRITE !,"Enter first visit date (YYYY-MM-DD): " 
+ WRITE !,"Enter staff treating this patient (comma-separated): "
+ READ stafflist
+ WRITE !,"Enter first visit date (YYYY-MM-DD): "
  READ visitDate
+ WRITE !,"Enter allergies (comma-separated, or leave empty if none): "
+ READ allergiesStr
 
- SET ^Patients(id,"Name")=name                  ; string
- SET ^Patients(id,"Room")=room                  ; number
- SET ^Patients(id,"Diagnosis")=diag             ; string
- SET ^Patients(id,"Staff")= stafflist           ; list as comma-separated
- SET ^Patients(id,"Visits",1)=visitDate         ; date list
+ NEW year SET year=$PIECE(visitDate,"-",1)
+
+ SET ^Patients(id,"Name")=name
+ SET ^Patients(id,"Room")=room
+ SET ^Patients(id,"Diagnosis")=diag
+ SET ^Patients(id,"Staff")=stafflist
+
+ IF $GET(allergiesStr)'="" DO
+ . SET ^Patients(id,"Allergies")=$LISTFROMSTRING(allergiesStr,",")
+ ELSE  DO
+ . SET ^Patients(id,"Allergies")=$LISTBUILD()
+
+ SET ^Patients(id,"Visits",year,1)=visitDate
 
  WRITE !,"Patient ",name," added."
  QUIT
@@ -62,47 +72,70 @@ FindPatientByID
  WRITE !,"Enter patient ID: "
  READ pid
  IF '$DATA(^Patients(pid)) WRITE !,"Patient not found." QUIT
+
  WRITE !,"ID: ",pid
- WRITE !," Name: ",^Patients(pid,"Name")
- WRITE !," Room: ",^Patients(pid,"Room")
- WRITE !," Diagnosis: ",^Patients(pid,"Diagnosis")
- WRITE !," Treating Staff: ",^Patients(pid,"Staff")
+ WRITE !," Name: ",$GET(^Patients(pid,"Name"))
+ WRITE !," Room: ",$GET(^Patients(pid,"Room"))
+ WRITE !," Diagnosis: ",$GET(^Patients(pid,"Diagnosis"))
+ WRITE !," Treating Staff: ",$GET(^Patients(pid,"Staff"))
+
+ NEW allergyOut
+ IF $LISTVALID(^Patients(pid,"Allergies")) DO
+ . SET allergyOut = $LISTTOSTRING(^Patients(pid,"Allergies"),",",1)
+ ELSE  SET allergyOut = $GET(^Patients(pid,"Allergies"),"(none)")
+
+ WRITE !," Allergies: ",allergyOut
+
  WRITE !," Visits: "
- NEW vid
- SET vid=""
- FOR  SET vid=$ORDER(^Patients(pid,"Visits",vid)) QUIT:vid=""  DO
- . WRITE ^Patients(pid,"Visits",vid)," "
+ NEW year,vid
+ SET year=""
+ FOR  SET year=$ORDER(^Patients(pid,"Visits",year)) QUIT:year=""  DO
+ . SET vid=""
+ . FOR  SET vid=$ORDER(^Patients(pid,"Visits",year,vid)) QUIT:vid=""  DO
+ . . WRITE ^Patients(pid,"Visits",year,vid)," "
  WRITE !
  QUIT
+
 
 AddVisitToPatient
  WRITE !,"Enter patient ID: "
  READ pid
  IF '$DATA(^Patients(pid)) WRITE !,"Patient not found." QUIT
+
  WRITE !,"Enter new visit date (YYYY-MM-DD): "
  READ newVisit
- NEW lastVisit
- SET lastVisit=$ORDER(^Patients(pid,"Visits",""),-1)
- IF lastVisit="" SET lastVisit=0
- SET ^Patients(pid,"Visits",lastVisit+1)=newVisit
- WRITE !,"New visit added for patient ",^Patients(pid,"Name")
+
+ NEW year SET year=$PIECE(newVisit,"-",1)
+
+ NEW last SET last=$ORDER(^Patients(pid,"Visits",year,""),-1)
+ IF last="" SET last=0
+
+ SET ^Patients(pid,"Visits",year,last+1)=newVisit
+
+ WRITE !,"New visit added for patient ",$GET(^Patients(pid,"Name"))
  QUIT
 
 ListPatients
  WRITE !!,"--- ALL PATIENT RECORDS ---",!
  
- NEW pid, vid
- SET pid=""
+ NEW pid SET pid=""
  FOR  SET pid=$ORDER(^Patients(pid)) QUIT:pid=""  DO
  . WRITE !,"ID: ",pid
- . WRITE !," Name: ",^Patients(pid,"Name")
- . WRITE !," Room: ",^Patients(pid,"Room")
- . WRITE !," Diagnosis: ",^Patients(pid,"Diagnosis")
- . WRITE !," Treating Staff: ",^Patients(pid,"Staff")
+ . WRITE !," Name: ",$GET(^Patients(pid,"Name"))
+ . WRITE !," Room: ",$GET(^Patients(pid,"Room"))
+ . WRITE !," Diagnosis: ",$GET(^Patients(pid,"Diagnosis"))
+ . WRITE !," Treating Staff: ",$GET(^Patients(pid,"Staff"))
+ . NEW allergyOut
+ . IF $LISTVALID(^Patients(pid,"Allergies")) DO
+ . . SET allergyOut = $LISTTOSTRING(^Patients(pid,"Allergies"),",",1)
+ . ELSE  SET allergyOut = $GET(^Patients(pid,"Allergies"),"(none)")
+ . WRITE !," Allergies: ",allergyOut
  . WRITE !," Visit: "
- . SET vid=""
- . FOR  SET vid=$ORDER(^Patients(pid,"Visits",vid)) QUIT:vid=""  DO
- . . WRITE ^Patients(pid,"Visits",vid)," "
+ . NEW year,vid SET year=""
+ . FOR  SET year=$ORDER(^Patients(pid,"Visits",year)) QUIT:year=""  DO
+ . . SET vid=""
+ . . FOR  SET vid=$ORDER(^Patients(pid,"Visits",year,vid)) QUIT:vid=""  DO
+ . . . WRITE ^Patients(pid,"Visits",year,vid)," "
  . WRITE !
 
  QUIT
@@ -140,8 +173,7 @@ FindStaffByID
 ListStaff
  WRITE !!,"--- ALL STAFF RECORDS ---",!
  
- NEW sid
- SET sid=""
+ NEW sid SET sid=""
  FOR  SET sid=$ORDER(^Staff(sid)) QUIT:sid=""  DO
  . WRITE !,"ID: ",sid
  . WRITE !," Name: ",^Staff(sid,"Name")
