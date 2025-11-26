@@ -1,0 +1,149 @@
+ROUTINE Practice2.Practice2
+Practice2Practice2 ;
+  NEW choice
+ FOR  DO  QUIT:choice="0"  
+ . WRITE !,"--- Hospital Management System ---"
+ . WRITE !,"1. Add Patient"
+ . WRITE !,"2. Remove Patient"
+ . WRITE !,"3. List Patients"
+ . WRITE !,"4. Add Staff"
+ . WRITE !,"5. Remove Staff"
+ . WRITE !,"6. List Staff"
+ . WRITE !,"7. Find Patient by ID"
+ . WRITE !,"8. Find Staff by ID"
+ . WRITE !,"9. Add Visit to Patient"
+ . WRITE !,"0. Exit"
+ . WRITE !,"Enter choice: "
+ . READ choice
+ . IF choice="1" DO AddPatient
+ . ELSE  IF choice="2" DO RemovePatient
+ . ELSE  IF choice="3" DO ListPatients
+ . ELSE  IF choice="4" DO AddStaff
+ . ELSE  IF choice="5" DO RemoveStaff
+ . ELSE  IF choice="6" DO ListStaff
+ . ELSE  IF choice="7" DO FindPatientByID
+ . ELSE  IF choice="8" DO FindStaffByID
+ . ELSE  IF choice="9" DO AddVisitToPatient
+
+ QUIT
+
+AddPatient
+ WRITE !,"Enter patient name: "
+ READ name
+ WRITE !,"Enter patient ID: "
+ READ id
+ WRITE !,"Enter room number: "
+ READ room
+ WRITE !,"Enter diagnosis: "
+ READ diag
+ WRITE !,"Enter staff treating this patient (comma-separated): " 
+ READ stafflist 
+ WRITE !,"Enter first visit date (YYYY-MM-DD): " 
+ READ visitDate
+
+ SET ^Patients(id,"Name")=name                  ; string
+ SET ^Patients(id,"Room")=room                  ; number
+ SET ^Patients(id,"Diagnosis")=diag             ; string
+ SET ^Patients(id,"Staff")= stafflist           ; list as comma-separated
+ SET ^Patients(id,"Visits",1)=visitDate         ; date list
+
+ WRITE !,"Patient ",name," added."
+ QUIT
+
+RemovePatient
+ WRITE !,"Enter patient ID to remove: "
+ READ id
+ IF '$DATA(^Patients(id)) WRITE !,"Patient not found." QUIT
+ KILL ^Patients(id)
+ WRITE !,"Patient removed."
+ QUIT
+
+FindPatientByID
+ WRITE !,"Enter patient ID: "
+ READ pid
+ IF '$DATA(^Patients(pid)) WRITE !,"Patient not found." QUIT
+ WRITE !,"ID: ",pid
+ WRITE !," Name: ",^Patients(pid,"Name")
+ WRITE !," Room: ",^Patients(pid,"Room")
+ WRITE !," Diagnosis: ",^Patients(pid,"Diagnosis")
+ WRITE !," Treating Staff: ",^Patients(pid,"Staff")
+ WRITE !," Visits: "
+ NEW vid
+ SET vid=""
+ FOR  SET vid=$ORDER(^Patients(pid,"Visits",vid)) QUIT:vid=""  DO
+ . WRITE ^Patients(pid,"Visits",vid)," "
+ WRITE !
+ QUIT
+
+AddVisitToPatient
+ WRITE !,"Enter patient ID: "
+ READ pid
+ IF '$DATA(^Patients(pid)) WRITE !,"Patient not found." QUIT
+ WRITE !,"Enter new visit date (YYYY-MM-DD): "
+ READ newVisit
+ NEW lastVisit
+ SET lastVisit=$ORDER(^Patients(pid,"Visits",""),-1)
+ IF lastVisit="" SET lastVisit=0
+ SET ^Patients(pid,"Visits",lastVisit+1)=newVisit
+ WRITE !,"New visit added for patient ",^Patients(pid,"Name")
+ QUIT
+
+ListPatients
+ WRITE !!,"--- ALL PATIENT RECORDS ---",!
+ 
+ NEW pid, vid
+ SET pid=""
+ FOR  SET pid=$ORDER(^Patients(pid)) QUIT:pid=""  DO
+ . WRITE !,"ID: ",pid
+ . WRITE !," Name: ",^Patients(pid,"Name")
+ . WRITE !," Room: ",^Patients(pid,"Room")
+ . WRITE !," Diagnosis: ",^Patients(pid,"Diagnosis")
+ . WRITE !," Treating Staff: ",^Patients(pid,"Staff")
+ . WRITE !," Visit: "
+ . SET vid=""
+ . FOR  SET vid=$ORDER(^Patients(pid,"Visits",vid)) QUIT:vid=""  DO
+ . . WRITE ^Patients(pid,"Visits",vid)," "
+ . WRITE !
+
+ QUIT
+
+AddStaff
+ WRITE !,"Enter staff name: "
+ READ name
+ WRITE !,"Enter staff ID: "
+ READ id
+ WRITE !,"Enter role (Doctor/Nurse/Ambulance): "
+ READ role
+
+ SET ^Staff(id,"Name")=name
+ SET ^Staff(id,"Role")=role
+ WRITE !,"Staff member ",name," added."
+ QUIT
+
+RemoveStaff
+ WRITE !,"Enter staff ID to remove: "
+ READ id
+ IF '$DATA(^Staff(id)) WRITE !,"Staff not found." QUIT
+ KILL ^Staff(id)
+ WRITE !,"Staff removed."
+ QUIT
+
+FindStaffByID
+ WRITE !,"Enter staff ID: "
+ READ sid
+ IF '$DATA(^Staff(sid)) WRITE !,"Staff not found." QUIT
+ WRITE !,"ID: ",sid
+ WRITE !," Name: ",^Staff(sid,"Name")
+ WRITE !," Role: ",^Staff(sid,"Role"),!
+ QUIT
+
+ListStaff
+ WRITE !!,"--- ALL STAFF RECORDS ---",!
+ 
+ NEW sid
+ SET sid=""
+ FOR  SET sid=$ORDER(^Staff(sid)) QUIT:sid=""  DO
+ . WRITE !,"ID: ",sid
+ . WRITE !," Name: ",^Staff(sid,"Name")
+ . WRITE !," Role: ",^Staff(sid,"Role"),!
+ QUIT
