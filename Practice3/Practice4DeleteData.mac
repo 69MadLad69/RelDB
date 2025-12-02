@@ -1,0 +1,34 @@
+ROUTINE Practice4.Practice4DeleteData
+Practice4Practice4DeleteData ;
+    WRITE !,"=== DELETING ALL Hospital DATA ===",!
+
+    &sql(DELETE FROM Hospital.Appointment)
+    DO ShowSQLStatus("Hospital.Appointment")
+
+    &sql(DELETE FROM Hospital.Patient)
+    DO ShowSQLStatus("Hospital.Patient")
+
+    &sql(DELETE FROM Hospital.Nurse)
+    DO ShowSQLStatus("Hospital.Nurse")
+
+    &sql(DELETE FROM Hospital.AmbulanceDriver)
+    DO ShowSQLStatus("Hospital.AmbulanceDriver")
+
+    &sql(DELETE FROM Hospital.Doctor)
+    DO ShowSQLStatus("Hospital.Doctor")
+
+    &sql(DELETE FROM Hospital.HospitalRoom)
+    DO ShowSQLStatus("Hospital.HospitalRoom")
+
+    WRITE !,"=== ALL DATA DELETED (tables and classes remain) ===",!
+    QUIT
+
+
+ShowSQLStatus(tableName)
+    IF SQLCODE<0 {
+        WRITE !,"ERROR deleting from ",tableName,": SQLCODE=",SQLCODE
+        IF $DATA(%msg) WRITE !,"  Message: ",%msg
+    } ELSE {
+        WRITE !,"Deleted from ",tableName,". Rows affected: ",$GET(%ROWCOUNT,0)
+    }
+    QUIT

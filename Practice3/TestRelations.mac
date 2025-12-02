@@ -1,0 +1,42 @@
+ROUTINE Hospital.TestRelations
+HospitalTestRelations ;
+    NEW stmt, rset, sc, doc, i, patient, nurse, id
+
+    WRITE !,"=== Doctors and their Patients & Nurses ===",!
+
+    SET stmt = ##class(%SQL.Statement).%New()
+    SET sc = stmt.%Prepare("SELECT ID FROM Hospital.Doctor")
+    IF sc'=1 DO $SYSTEM.Status.DisplayError(sc) QUIT
+
+    SET rset = stmt.%Execute()
+
+    WHILE rset.%Next() {
+        SET id = rset.ID
+        SET doc = ##class(Hospital.Doctor).%OpenId(id)
+        IF doc = "" QUIT 
+
+        WRITE !!,"Doctor ID=",doc.%Id(),"  Name=",doc.FullName,!
+        WRITE "  Specialization: ",doc.Specialization,!
+
+        WRITE !,"  Patients:",!
+        IF doc.Patients.Count() = 0 {
+            WRITE "    (no patients)",!
+        } ELSE {
+            FOR i=1:1:doc.Patients.Count() {
+                SET patient = doc.Patients.GetAt(i)
+                WRITE "    - ",patient.FullName," (Diagnosis: ",patient.Diagnosis,")",!
+            }
+        }
+
+        WRITE !,"  Nurses:",!
+        IF doc.Nurses.Count() = 0 {
+            WRITE "    (no nurses)",!
+        } ELSE {
+            FOR i=1:1:doc.Nurses.Count() {
+                SET nurse = doc.Nurses.GetAt(i)
+                WRITE "    - ",nurse.FullName," (Experience: ",nurse.ExperienceYears," years)",!
+            }
+        }
+    }
+
+    QUIT

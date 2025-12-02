@@ -1,0 +1,219 @@
+ROUTINE Practice4.Practice4CreateData
+Practice4Practice4CreateData ;
+    NEW status,room1,room2,doc1,doc2,n1,n2,d1,d2,p1,p2,a1,a2
+    NEW addr
+
+    WRITE !,"=== Creating Rooms ==="
+    SET room1 = ##class(Hospital.HospitalRoom).%New()
+    SET room1.RoomId = 1
+    SET room1.RoomNumber = 101
+    SET room1.Department = "Cardiology"
+    SET status = room1.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    SET room2 = ##class(Hospital.HospitalRoom).%New()
+    SET room2.RoomId = 2
+    SET room2.RoomNumber = 202
+    SET room2.Department = "Neurology"
+    SET status = room2.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    WRITE !,"=== Creating Doctors ==="
+    SET doc1 = ##class(Hospital.Doctor).%New()
+    SET doc1.IdNumber = 1001
+    SET doc1.FullName = "Dr. John Smith"
+    SET doc1.Age = 45
+    SET doc1.AssignedRoom = room1
+    SET doc1.Specialization = "Cardiologist"
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "Main St 1"
+    SET addr.City = "Kyiv"
+    SET addr.ZipCode = "01001"
+    SET addr.Country = "Ukraine"
+    SET doc1.HomeAddress = addr
+
+    DO doc1.ContactPhones.SetAt("+380441112233","work")
+    DO doc1.ContactPhones.SetAt("+380501234567","mobile")
+    DO doc1.ContactPhones.SetAt("+380442223344","home")
+
+    SET status = doc1.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    SET doc2 = ##class(Hospital.Doctor).%New()
+    SET doc2.IdNumber = 1002
+    SET doc2.FullName = "Dr. Emily Carter"
+    SET doc2.Age = 39
+    SET doc2.AssignedRoom = room2
+    SET doc2.Specialization = "Neurologist"
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "Green Ave 15"
+    SET addr.City = "Lviv"
+    SET addr.ZipCode = "79000"
+    SET addr.Country = "Ukraine"
+    SET doc2.HomeAddress = addr
+
+    DO doc2.ContactPhones.SetAt("+380442225566","work")
+    DO doc2.ContactPhones.SetAt("+380931234567","mobile")
+    DO doc2.ContactPhones.SetAt("+380443336677","home")
+
+    SET status = doc2.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    WRITE !,"=== Creating Nurses ==="
+    SET n1 = ##class(Hospital.Nurse).%New()
+    SET n1.IdNumber = 2001
+    SET n1.FullName = "Anna Johnson"
+    SET n1.Age = 33
+    SET n1.AssignedRoom = room1
+    SET n1.ExperienceYears = 5
+    SET n1.SupervisingDoctor = doc1
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "Blue St 10"
+    SET addr.City = "Kyiv"
+    SET addr.ZipCode = "01002"
+    SET addr.Country = "Ukraine"
+    SET n1.HomeAddress = addr
+
+    DO n1.ContactPhones.SetAt("+380501112233","mobile")
+    DO n1.ContactPhones.SetAt("+380445556677","home")
+
+    SET status = n1.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    SET n2 = ##class(Hospital.Nurse).%New()
+    SET n2.IdNumber = 2002
+    SET n2.FullName = "Mark Wilson"
+    SET n2.Age = 40
+    SET n2.AssignedRoom = room2
+    SET n2.ExperienceYears = 12
+    SET n2.SupervisingDoctor = doc2
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "Orange Blvd 5"
+    SET addr.City = "Lviv"
+    SET addr.ZipCode = "79001"
+    SET addr.Country = "Ukraine"
+    SET n2.HomeAddress = addr
+
+    DO n2.ContactPhones.SetAt("+380671234567","mobile")
+    DO n2.ContactPhones.SetAt("+380443339900","work")
+
+    SET status = n2.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    WRITE !,"=== Creating Ambulance Drivers ==="
+    SET d1 = ##class(Hospital.AmbulanceDriver).%New()
+    SET d1.IdNumber = 3001
+    SET d1.FullName = "Robert King"
+    SET d1.Age = 41
+    SET d1.AssignedRoom = room1
+    SET d1.LicenseNumber = "DRV-100"
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "River Rd 3"
+    SET addr.City = "Kyiv"
+    SET addr.ZipCode = "01003"
+    SET addr.Country = "Ukraine"
+    SET d1.HomeAddress = addr
+
+    DO d1.ContactPhones.SetAt("+380991112233","mobile")
+    DO d1.ContactPhones.SetAt("+380445550011","work")
+
+    SET status = d1.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    SET d2 = ##class(Hospital.AmbulanceDriver).%New()
+    SET d2.IdNumber = 3002
+    SET d2.FullName = "Dmitry Fedorov"
+    SET d2.Age = 36
+    SET d2.AssignedRoom = room2
+    SET d2.LicenseNumber = "DRV-101"
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "Sunrise St 8"
+    SET addr.City = "Lviv"
+    SET addr.ZipCode = "79002"
+    SET addr.Country = "Ukraine"
+    SET d2.HomeAddress = addr
+
+    DO d2.ContactPhones.SetAt("+380981234567","mobile")
+    DO d2.ContactPhones.SetAt("+380445567889","home")
+
+    SET status = d2.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    WRITE !,"=== Creating Patients ==="
+    SET p1 = ##class(Hospital.Patient).%New()
+    SET p1.IdNumber = 4001
+    SET p1.FullName = "Michael Johnson"
+    SET p1.Age = 50
+    SET p1.AssignedRoom = room1
+    SET p1.Diagnosis = "Hypertension"
+    SET p1.PrimaryDoctor = doc1
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "Patient St 1"
+    SET addr.City = "Kyiv"
+    SET addr.ZipCode = "01004"
+    SET addr.Country = "Ukraine"
+    SET p1.HomeAddress = addr
+
+    DO p1.Allergies.Insert("Penicillin")
+    DO p1.Allergies.Insert("Dust")
+    DO p1.Allergies.Insert("Pollen")
+
+    DO p1.ContactPhones.SetAt("+380631112233","mobile")
+    DO p1.ContactPhones.SetAt("+380445512233","home")
+
+    SET status = p1.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    SET p2 = ##class(Hospital.Patient).%New()
+    SET p2.IdNumber = 4002
+    SET p2.FullName = "Sarah Wilson"
+    SET p2.Age = 27
+    SET p2.AssignedRoom = room2
+    SET p2.Diagnosis = "Migraine"
+    SET p2.PrimaryDoctor = doc2
+
+    SET addr = ##class(Hospital.Address).%New()
+    SET addr.Street = "Patient St 2"
+    SET addr.City = "Lviv"
+    SET addr.ZipCode = "79003"
+    SET addr.Country = "Ukraine"
+    SET p2.HomeAddress = addr
+
+    DO p2.Allergies.Insert("Peanuts")
+    DO p2.Allergies.Insert("Chocolate")
+
+    DO p2.ContactPhones.SetAt("+380661234567","mobile")
+    DO p2.ContactPhones.SetAt("+380445578900","home")
+
+    SET status = p2.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    WRITE !,"=== Creating Appointments ==="
+    SET a1 = ##class(Hospital.Appointment).%New()
+    SET a1.AppointmentId = 9001
+    SET a1.AppointmentDate = "2025-01-12 10:00:00"
+    SET a1.Patient = p1
+    SET a1.PrescribingDoctor = doc1
+    DO a1.SaveNotes("Initial consultation, blood pressure high.")
+    SET status = a1.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+    SET a2 = ##class(Hospital.Appointment).%New()
+    SET a2.AppointmentId = 9002
+    SET a2.AppointmentDate = "2025-02-02 14:30:00"
+    SET a2.Patient = p2
+    SET a2.PrescribingDoctor = doc2
+    DO a2.SaveNotes("Severe migraine, new treatment added.")
+    SET status = a2.%Save()
+    IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+
+
+    WRITE !,"=== ALL OBJECTS CREATED AND SAVED SUCCESSFULLY ===",!
+    QUIT
