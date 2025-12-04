@@ -1,0 +1,28 @@
+ROUTINE Practice3.RunHospitalTests
+Practice3RunHospitalTests ;
+    NEW root,suite,class,test,quals,rc
+
+    SET suite = "Hospital"
+    SET class = "Hospital.HospitalTests"
+
+    SET root = "/usr/irissys/mgr/Practice5Tests"
+
+    SET ^UnitTestRoot = root
+
+    DO ##class(%File).CreateDirectory(root)
+    DO ##class(%File).CreateDirectory(root_"/"_suite)
+
+    WRITE !,"======================================================================",!
+    WRITE "Directory: ",root_"/"_suite_"/",!,!
+    WRITE "======================================================================",!
+
+    SET test  = suite_":"_class
+    SET quals = "/noload/norecursive/nodelete"
+
+    WRITE !,"Running Unit Tests for ",suite,"...",!!
+
+    DO ##class(%UnitTest.Manager).RunTest(test, quals)
+
+    WRITE !!,"(If you do not see 'All PASSED' above, open the URL printed by %UnitTest.Manager to see details.)",!
+
+    QUIT

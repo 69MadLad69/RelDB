@@ -15,6 +15,23 @@ Property AssignedRoom As Hospital.HospitalRoom;
 
 Property HomeAddress As Hospital.Address;
 
+Property AgeCategory As %String [ Calculated, SqlComputeCode = { set {AgeCategory} = ##class(Hospital.Patient).CalcAgeCategory({Age}) }, SqlComputed ];
+
+ClassMethod CalcAgeCategory(age As %Integer) As %String
+{
+    Quit $Select(
+        age = "": "",
+        age < 18: "Child",
+        age < 65: "Adult",
+        1: "Senior"
+    )
+}
+
+Method AgeCategoryGet() As %String [ CodeMode = expression, ServerOnly = 1 ]
+{
+##class(Hospital.Patient).CalcAgeCategory(..Age)
+}
+
 Storage Default
 {
 <Data name="ContactPhones">

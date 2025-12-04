@@ -1,0 +1,180 @@
+ROUTINE Practice3.Practice5AutomaticDataCreation
+Practice3Practice5AutomaticDataCreation ;
+    NEW status,roomCount,docCount,nurseCount,driverCount,patientCount,apptCount
+    NEW i,rooms,docs,nurses,drivers,patients,appt,addr
+    NEW depList,diagList,allergyList
+    NEW pid,rid,apid,lseq,pIndex,dayCount,sec,cnt,idx,alPos
+
+    SET roomCount    = 3
+    SET docCount     = 3
+    SET nurseCount   = 4
+    SET driverCount  = 3
+    SET patientCount = 5
+    SET apptCount    = 8
+
+    SET depList     = "Cardiology^Neurology^Therapy"
+    SET diagList    = "Hypertension^Migraine^Flu^Asthma^Diabetes"
+    SET allergyList = "Penicillin^Dust^Pollen^Peanuts^Chocolate^Gluten^Seafood"
+
+    WRITE !,"=== AUTO-POPULATE HOSPITAL DATA (Practice 5) ===",!
+
+    WRITE !,"=== Creating Rooms ==="
+    FOR i=1:1:roomCount {
+        SET rooms(i) = ##class(Hospital.HospitalRoom).%New()
+
+        SET rid = $INCREMENT(^Hospital.Practice5("RoomId"))
+        SET rooms(i).RoomId     = 100000 + rid 
+        SET rooms(i).RoomNumber = 100 + (i*10)
+        SET rooms(i).Department = $PIECE(depList,"^",((i-1) # $L(depList,"^"))+1)
+
+        SET status = rooms(i).%Save()
+        IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+    }
+
+    WRITE !,"=== Creating Doctors ==="
+    FOR i=1:1:docCount {
+        SET docs(i) = ##class(Hospital.Doctor).%New()
+
+        SET pid = $INCREMENT(^Hospital.Practice5("PersonId"))
+        SET docs(i).IdNumber = 100000 + pid
+
+        SET docs(i).FullName = ##class(%Library.PopulateUtils).Name("")
+        SET docs(i).Age = 30 + $RANDOM(30) 
+        SET docs(i).AssignedRoom = rooms(((i-1) # roomCount)+1)
+        SET docs(i).Specialization = $PIECE("Cardiologist^Neurologist^Therapist","^",((i-1)#3)+1)
+
+        SET addr = ##class(Hospital.Address).%New()
+        SET addr.Street  = ##class(%Library.PopulateUtils).Street()
+        SET addr.City    = ##class(%Library.PopulateUtils).City()
+        SET addr.ZipCode = ##class(%Library.PopulateUtils).USZip()
+        SET addr.Country = "Ukraine"
+        SET docs(i).HomeAddress = addr
+
+        DO docs(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"mobile")
+        DO docs(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"work")
+        DO docs(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"home")
+
+        SET status = docs(i).%Save()
+        IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+    }
+
+    WRITE !,"=== Creating Nurses ==="
+    FOR i=1:1:nurseCount {
+        SET nurses(i) = ##class(Hospital.Nurse).%New()
+
+        SET pid = $INCREMENT(^Hospital.Practice5("PersonId"))
+        SET nurses(i).IdNumber = 100000 + pid
+
+        SET nurses(i).FullName = ##class(%Library.PopulateUtils).Name("")
+        SET nurses(i).Age = 20 + $RANDOM(30)
+        SET nurses(i).AssignedRoom = rooms(((i-1) # roomCount)+1)
+        SET nurses(i).ExperienceYears = $RANDOM(20)
+        SET nurses(i).SupervisingDoctor = docs(((i-1) # docCount)+1)
+
+        SET addr = ##class(Hospital.Address).%New()
+        SET addr.Street  = ##class(%Library.PopulateUtils).Street()
+        SET addr.City    = ##class(%Library.PopulateUtils).City()
+        SET addr.ZipCode = ##class(%Library.PopulateUtils).USZip()
+        SET addr.Country = "Ukraine"
+        SET nurses(i).HomeAddress = addr
+
+        DO nurses(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"mobile")
+        DO nurses(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"home")
+
+        SET status = nurses(i).%Save()
+        IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+    }
+
+    WRITE !,"=== Creating Ambulance Drivers ==="
+    FOR i=1:1:driverCount {
+        SET drivers(i) = ##class(Hospital.AmbulanceDriver).%New()
+
+        SET pid = $INCREMENT(^Hospital.Practice5("PersonId"))
+        SET drivers(i).IdNumber = 100000 + pid
+
+        SET drivers(i).FullName = ##class(%Library.PopulateUtils).Name("")
+        SET drivers(i).Age = 25 + $RANDOM(25)
+        SET drivers(i).AssignedRoom = rooms(((i-1) # roomCount)+1)
+
+        SET lseq = $INCREMENT(^Hospital.Practice5("LicenseSeq"))
+        SET drivers(i).LicenseNumber = "DRV-"_(100000 + lseq)
+
+        SET addr = ##class(Hospital.Address).%New()
+        SET addr.Street  = ##class(%Library.PopulateUtils).Street()
+        SET addr.City    = ##class(%Library.PopulateUtils).City()
+        SET addr.ZipCode = ##class(%Library.PopulateUtils).USZip()
+        SET addr.Country = "Ukraine"
+        SET drivers(i).HomeAddress = addr
+
+        DO drivers(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"mobile")
+        DO drivers(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"work")
+
+        SET status = drivers(i).%Save()
+        IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+    }
+
+    WRITE !,"=== Creating Patients ==="
+    FOR i=1:1:patientCount {
+        SET patients(i) = ##class(Hospital.Patient).%New()
+
+        SET pid = $INCREMENT(^Hospital.Practice5("PersonId"))
+        SET patients(i).IdNumber = 100000 + pid
+
+        SET patients(i).FullName = ##class(%Library.PopulateUtils).Name("")
+        SET patients(i).Age = 5 + $RANDOM(80)
+        SET patients(i).AssignedRoom = rooms(((i-1) # roomCount)+1)
+        SET patients(i).Diagnosis = $PIECE(diagList,"^",((i-1) # $L(diagList,"^"))+1)
+        SET patients(i).PrimaryDoctor = docs(((i-1) # docCount)+1)
+
+        SET addr = ##class(Hospital.Address).%New()
+        SET addr.Street  = ##class(%Library.PopulateUtils).Street()
+        SET addr.City    = ##class(%Library.PopulateUtils).City()
+        SET addr.ZipCode = ##class(%Library.PopulateUtils).USZip()
+        SET addr.Country = "Ukraine"
+        SET patients(i).HomeAddress = addr
+
+        SET cnt = 1 + $RANDOM(3)
+        FOR idx=1:1:cnt {
+            SET alPos = $RANDOM($L(allergyList,"^"))+1
+            DO patients(i).Allergies.Insert($PIECE(allergyList,"^",alPos))
+        }
+
+        DO patients(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"mobile")
+        DO patients(i).ContactPhones.SetAt(##class(%Library.PopulateUtils).USPhone(),"home")
+
+        SET status = patients(i).%Save()
+        IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+    }
+
+    WRITE !,"=== Creating Appointments ==="
+    FOR i=1:1:apptCount {
+        SET appt = ##class(Hospital.Appointment).%New()
+
+        SET apid = $INCREMENT(^Hospital.Practice5("ApptId"))
+        SET appt.AppointmentId = 100000 + apid
+
+        SET pIndex = $RANDOM(patientCount) + 1
+        SET appt.Patient = patients(pIndex)
+        SET appt.PrescribingDoctor = patients(pIndex).PrimaryDoctor
+
+        SET baseDay = +$PIECE($HOROLOG,",",1) + i
+        SET dateStr = $ZDATE(baseDay, 8) 
+
+        SET timeStr = $SELECT(
+        (i#4)=0:"09:00:00",
+        (i#4)=1:"11:30:00",
+        (i#4)=2:"14:00:00",
+        1      :"16:15:00"
+        )
+
+        SET appt.AppointmentDate = dateStr_" "_timeStr
+
+        DO appt.SaveNotes("Auto-generated note for appointment "_appt.AppointmentId)
+
+        SET status = appt.%Save()
+        IF status'=1 DO $SYSTEM.Status.DisplayError(status) QUIT
+    }
+
+
+    WRITE !,"=== AUTO-POPULATE COMPLETED SUCCESSFULLY ===",!
+    QUIT
